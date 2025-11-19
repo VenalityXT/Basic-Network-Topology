@@ -1,61 +1,69 @@
-# IP Addressing & Subnetting Walkthrough  
-**On-the-Job Scenario: Network Expansion & Subnet Design**
+# Practical Subnetting Breakdown  
+### *A Human-Friendly Walkthrough for Real-World IT Work*
 
-This document provides a clear, step-by-step breakdown of the subnetting tasks, addressing calculations, and troubleshooting from the scenario. Use it as reference material to support your screenshots.
+## 1. IP Address Classes (But Explained Like a Normal Person)
+
+Every IPv4 address starts with a number that tells you what “class” it lives in. Think of classes as neighborhoods:
+
+- **Class A** = huge neighborhoods  
+- **Class B** = medium neighborhoods  
+- **Class C** = small, tight-knit neighborhoods  
+
+The only thing that matters? The **first octet**.
+
+| Address        | First Octet | Neighborhood (Class) | Why |
+|----------------|-------------|------------------------|-----|
+| **192.168.1.1** | 192         | Class C                | 192–223 = Class C |
+| **172.16.0.1**  | 172         | Class B                | 128–191 = Class B |
+| **10.0.0.1**    | 10          | Class A                | 1–126 = Class A |
+
+Simple. Clean. No drama.
 
 ---
 
-## 1. Understanding IP Address Classes
+## 2. Subnetting 192.168.10.0/24 — Borrowing Bits Like You're Taking PTO
 
-IP class is determined by the **first octet**:
+We start with a /24 (255.255.255.0).  
+That gives us 256 IP addresses but only **1 subnet**.  
+Your company says: “We need more subnets.”  
+Cool. Borrow **2 bits**.
 
-- **Class A:** 1–126  
-- **Class B:** 128–191  
-- **Class C:** 192–223  
+### 2.a. How many subnets do we get?  
+2² = **4 subnets**
 
-| IP Address     | First Octet | Class |
-|----------------|-------------|--------|
-| 192.168.1.1    | 192         | C      |
-| 172.16.0.1     | 172         | B      |
-| 10.0.0.1       | 10          | A      |
+### 2.b. How many hosts does each subnet hold?  
+We borrowed 2 bits, so 6 host bits remain.  
+2⁶ − 2 = **62 usable hosts** per subnet.
 
----
+(Yes, we always subtract 2. Network + Broadcast are like the ‘lost socks’ of IP addressing — you never get to use them.)
 
-## 2. Subnetting 192.168.10.0/24 (Borrowing 2 Bits)
+### 2.c. What’s the subnet jump size?  
+The new mask is /26 → 255.255.255.192  
+Block size = 256 − 192 = **64**
 
-### 2.a. Number of Subnets  
-Formula: 2^borrowed_bits  
-- Borrowed bits: **2**  
-- Subnets: **4**
+So the subnets fall nicely like:
 
-### 2.b. Hosts per Subnet  
-Host bits remaining: 32 − (24 + 2) = **6 bits**  
-Formula: 2^host_bits − 2  
-- Hosts = 2⁶ − 2 = **62 hosts per subnet**
-
-### 2.c. Subnet Increment  
-New prefix: /24 + 2 = **/26**  
-Subnet mask: **255.255.255.192**  
-Increment = 256 − 192 = **64**
-
-Subnets:
 - 192.168.10.0  
 - 192.168.10.64  
 - 192.168.10.128  
 - 192.168.10.192  
 
+Each one a tidy little neighborhood of 62 hosts.
+
 ---
 
-## 3. Creating 4 Subnets from 192.168.20.0/24
+## 3. Designing 4 Subnets for 192.168.20.0/24  
+Here’s where you pretend you’re the network architect for a mid-sized company and they need four cleanly separated subnets.
 
-### 3.a. New Subnet Mask  
-Need 4 subnets → 2² = 4 → borrow **2 bits**  
-- New prefix: **/26**  
-- New mask: **255.255.255.192**
+### 3.a. What mask do we need?
+4 subnets → borrow 2 bits  
+/24 + 2 = **/26**  
+Mask = **255.255.255.192**
 
-### 3.b. Subnet Table (/26)
+### 3.b. Break it down logically
 
-Increment = 64
+Block size still: **64**  
+Let’s map everything like a pro:
 
 | Subnet | Network Address     | First Host          | Last Host           | Broadcast          |
 |--------|----------------------|----------------------|----------------------|---------------------|
@@ -64,32 +72,35 @@ Increment = 64
 | 3      | 192.168.20.128       | 192.168.20.129       | 192.168.20.190       | 192.168.20.191      |
 | 4      | 192.168.20.192       | 192.168.20.193       | 192.168.20.254       | 192.168.20.255      |
 
+This is the kind of table network engineers sketch on whiteboards every day.
+
 ---
 
-## 4. Troubleshooting Scenario
+## 4. Troubleshooting a Real User Issue  
+This is the part where someone calls the help desk and says:  
+> “My Wi-Fi is broken.”  
+But the IP tells the real story.
 
-User IP: **192.168.30.130**  
-Subnet mask: **255.255.255.192 (/26)**  
+User’s info:  
+- IP: **192.168.30.130**  
+- Mask: **255.255.255.192 (/26)**
 
-### 4.a. Is the IP Valid?  
-/26 mask = increment of **64**
+### 4.a. Is 192.168.30.130 even a valid host?  
+Let’s break down the /26 ranges (increment of 64):
 
-Subnets in this range:  
 - 192.168.30.0 – 63  
 - 192.168.30.64 – 127  
-- **192.168.30.128 – 191** ← IP falls here  
+- **192.168.30.128 – 191** ← this is the one  
 - 192.168.30.192 – 255  
 
-Range of the third subnet:
-- **Network:** 192.168.30.128  
-- **First host:** 192.168.30.129  
-- **Last host:** 192.168.30.190  
-- **Broadcast:** 192.168.30.191  
+The third subnet starts at 128, first host is 129, last is 190.
 
-The given IP **192.168.30.130** is between 129 and 190 →  
-✅ **Valid IP for this subnet**
+**130** is inside that range.  
+So yes — **the IP itself is valid.**
 
-### 4.b. Correct Subnet Range for This IP
+(Which means the problem isn’t the addressing — time to check gateway, DHCP, cable, Wi-Fi, etc.)
+
+### 4.b. Correct subnet info for the user
 
 | Item          | Value               |
 |---------------|---------------------|
@@ -98,6 +109,9 @@ The given IP **192.168.30.130** is between 129 and 190 →
 | Last Host     | 192.168.30.190      |
 | Broadcast     | 192.168.30.191      |
 
+Now you have the exact boundary of the user’s subnet.
+
 ---
 
-If you'd like, I can turn this into a GitHub-style README with badges and a description just like your other lab projects.  
+## Final Thoughts  
+Subnetting isn’t about memorizing charts: it’s about recognizing patterns. Once you understand increments, borrowed bits, and how to find ranges, you can walk into any network, map it out, and look like the person who’s been doing this for years.
