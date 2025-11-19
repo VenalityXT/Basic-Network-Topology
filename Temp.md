@@ -98,7 +98,7 @@ The third subnet starts at 128, first host is 129, last is 190.
 **130** is inside that range.  
 So yes **the IP itself is valid.**
 
-(Which means the problem isn’t the addressing — time to check gateway, DHCP, cable, Wi-Fi, etc.)
+(Which means the problem isn’t the addressing, time to check gateway, DHCP, cable, Wi-Fi, etc.)
 
 ### 4.b. Correct subnet info for the user
 
