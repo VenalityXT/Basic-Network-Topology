@@ -35,7 +35,7 @@ Cool. Borrow **2 bits**.
 We borrowed 2 bits, so 6 host bits remain.  
 2⁶ − 2 = **62 usable hosts** per subnet.
 
-(Yes, we always subtract 2. Network + Broadcast are like the ‘lost socks’ of IP addressing — you never get to use them.)
+(Yes, we always subtract 2. Network + Broadcast are like the ‘lost socks’ of IP addressing since you never get to use them.)
 
 ### 2.c. What’s the subnet jump size?  
 The new mask is /26 → 255.255.255.192  
@@ -96,7 +96,7 @@ Let’s break down the /26 ranges (increment of 64):
 The third subnet starts at 128, first host is 129, last is 190.
 
 **130** is inside that range.  
-So yes — **the IP itself is valid.**
+So yes **the IP itself is valid.**
 
 (Which means the problem isn’t the addressing — time to check gateway, DHCP, cable, Wi-Fi, etc.)
 
